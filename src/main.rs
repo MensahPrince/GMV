@@ -7,7 +7,7 @@ use std::io;
 
 #[derive(clap::Parser, Debug)]
 #[command(name = "gmv")]
-#[command(about = "A lightweight CLI tool")]
+#[command(about = "A GIT minimal version")]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -17,8 +17,12 @@ pub struct Cli {
 pub enum Commands {
     /// Initialize a new .gmv
     Init { path: String },
+
     /// Quit the GMV
     Quit,
+
+    /// List the elements in the directory
+    Ls,
 }
 
 struct InputParser;
@@ -48,6 +52,7 @@ impl InputParser {
     }
 }
 
+//Call and create neccessary dirs during the init of gmv
 fn init_gmv(path: &str) -> io::Result<()> {
     std::env::set_current_dir(path)?;
     std::fs::create_dir(".gmv")?;
@@ -90,6 +95,18 @@ fn main() {
                     println!("Exiting...");
                     break;
                 }
+                Commands::Ls => match std::fs::read_dir(".") {
+                    Ok(entries) => {
+                        for entry in entries.flatten() {
+                            let file_name = entry.file_name();
+                            let display_name = file_name.to_string_lossy();
+                            if entry.metadata().map(|m| m.is_dir()).unwrap_or(false) {
+                                println!("{}", display_name);
+                            }
+                        }
+                    }
+                    Err(e) => println!("fsearch: ls error: {}", e),
+                },
             },
             Err(e) => {
                 let _ = e.print();
