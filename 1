@@ -7,7 +7,6 @@ use std::io::{self, Write};
 
 mod logic;
 use crate::logic::functions::add_gmv;
-use crate::logic::functions::con_hash_256;
 use crate::logic::functions::init_gmv;
 
 #[derive(clap::Parser, Debug)]
@@ -35,10 +34,6 @@ pub enum Commands {
     /// Add a change for staging
     Add {
         path: String,
-    },
-
-    HashObject {
-        file: String,
     },
 }
 
@@ -123,11 +118,6 @@ fn main() {
                 Commands::Add { path } => {
                     if let Err(e) = add_gmv(path) {
                         println!("gmv: error: {}", e);
-                    }
-                }
-                Commands::HashObject { file } => {
-                    if let Err(e) = con_hash_256(file) {
-                        println!("gmv: error: {}", e)
                     }
                 }
             },
