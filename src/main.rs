@@ -9,6 +9,7 @@ mod logic;
 use crate::logic::functions::add_gmv;
 use crate::logic::functions::con_hash_256;
 use crate::logic::functions::init_gmv;
+use crate::logic::utils::write_to_objects;
 
 #[derive(clap::Parser, Debug)]
 #[command(name = "gmv")]
@@ -39,6 +40,8 @@ pub enum Commands {
 
     HashObject {
         file: String,
+        #[arg(short = 'w', long = "write")]
+        write: bool,
     },
 }
 
@@ -125,11 +128,16 @@ fn main() {
                         println!("gmv: error: {}", e);
                     }
                 }
-                Commands::HashObject { file } => {
-                    if let Err(e) = con_hash_256(file) {
-                        println!("gmv: error: {}", e)
+                Commands::HashObject { file, write } => match con_hash_256(file) {
+                    Ok((hash_hex, contents)) => {
+                        if write {
+                            if let Err(e) = write_to_objects(hash_hex, contents) {
+                                println!("gmv: error: {}", e);
+                            }
+                        }
                     }
-                }
+                    Err(e) => println!("gmv: error: {}", e),
+                },
             },
             Err(e) => {
                 let _ = e.print();
