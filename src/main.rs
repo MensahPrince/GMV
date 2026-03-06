@@ -10,6 +10,7 @@ use crate::logic::functions::add_gmv;
 use crate::logic::functions::con_hash_256;
 use crate::logic::functions::init_gmv;
 use crate::logic::utils::write_to_objects;
+use crate::logic::functions::write_tree;
 
 #[derive(clap::Parser, Debug)]
 #[command(name = "gmv")]
@@ -43,6 +44,8 @@ pub enum Commands {
         #[arg(short = 'w', long = "write")]
         write: bool,
     },
+
+    WriteTree,
 }
 
 struct InputParser;
@@ -138,6 +141,11 @@ fn main() {
                     }
                     Err(e) => println!("gmv: error: {}", e),
                 },
+                Commands::WriteTree => {
+                    if let Err(e) = write_tree() {
+                        println!("gmv: error: {}", e);
+                    }
+                }     
             },
             Err(e) => {
                 let _ = e.print();

@@ -41,3 +41,16 @@ pub fn write_to_objects(hash_hex: String, contents: Vec<u8>) -> Result<(), io::E
     fs::write(format!(".gmv/objects/{}/{}", dir, file), contents)?;
     Ok(())
 }
+
+pub fn file_con_parse(file: String) -> io::Result<Vec<String>> {
+    // This function is to read files, and parse them into a vector for processing
+    // convert the file path from string to path using Path::path
+    let path = Path::new(&file);
+
+    //We read the contents from the file
+    let file_con = fs::read_to_string(path)?;
+
+    let lines: Vec<String> = file_con.lines().map(String::from).collect();
+
+    Ok(lines)
+}
